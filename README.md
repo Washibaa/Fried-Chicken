@@ -1,1 +1,1 @@
-# Fried-Chicken Hong is a n
+# Fried-Chicken
