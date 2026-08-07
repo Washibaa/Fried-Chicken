@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.006em;
+}
+
+/* Chart theme — consumed by the SVG charts so they follow light/dark mode.
+   Status colors are identical in both modes (validated against both surfaces). */
+:root {
+  --chart-surface: #ffffff;
+  --chart-grid: #f3f4f6;
+  --chart-axis: #e5e7eb;
+  --chart-label: #9ca3af;
+  --chart-present: #15803d;
+  --chart-late: #d97706;
+  --chart-absent: #b91c1c;
+  --chart-pending: #6b7280;
+}
+
+.dark {
+  color-scheme: dark;
+  --chart-surface: #111827;
+  --chart-grid: #1f2937;
+  --chart-axis: #374151;
+  --chart-label: #9ca3af;
+  --chart-pending: #9ca3af;
+}
+
+/* Dark mode (SRS 3.2.2) — centralized overrides for the utility palette the app
+   uses, so every page follows the toggle without per-component dark: classes. */
+.dark .bg-\[\#f3f3f3\],
+.dark .bg-\[\#f8f8f8\] {
+  background-color: #030712;
+}
+.dark .bg-white {
+  background-color: #111827;
+}
+.dark .bg-gray-50 {
+  background-color: #1f2937;
+}
+.dark .bg-gray-100 {
+  background-color: #1f2937;
+}
+.dark .bg-blue-50 {
+  background-color: rgba(30, 58, 138, 0.35);
+}
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-100:hover,
+.dark .hover\:bg-gray-200:hover {
+  background-color: #374151;
+}
+.dark .bg-gray-900 {
+  background-color: #374151;
+}
+.dark .hover\:bg-gray-50\/60:hover {
+  background-color: rgba(31, 41, 55, 0.6);
+}
+.dark .hover\:bg-red-50:hover {
+  background-color: rgba(127, 29, 29, 0.3);
+}
+
+.dark .text-gray-900 {
+  color: #f9fafb;
+}
+.dark .text-gray-800 {
+  color: #f3f4f6;
+}
+.dark .text-gray-700 {
+  color: #e5e7eb;
+}
+.dark .text-gray-600 {
+  color: #d1d5db;
+}
+.dark .text-gray-500 {
+  color: #9ca3af;
+}
+.dark .hover\:text-gray-600:hover,
+.dark .hover\:text-gray-900:hover,
+.dark .hover\:text-gray-800:hover {
+  color: #f9fafb;
+}
+.dark .hover\:text-gray-500:hover {
+  color: #d1d5db;
+}
+
+.dark .border-gray-100 {
+  border-color: #1f2937;
+}
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: #374151;
+}
+.dark .hover\:border-gray-300:hover {
+  border-color: #4b5563;
+}
+.dark .divide-gray-50 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1f2937;
+}
+
+.dark .placeholder-gray-300::placeholder {
+  color: #4b5563;
+}
+
+/* Pastel status badges: darken their backgrounds for dark surfaces */
+.dark .bg-green-100 {
+  background-color: rgba(20, 83, 45, 0.4);
+}
+.dark .text-green-700 {
+  color: #4ade80;
+}
+.dark .bg-red-100 {
+  background-color: rgba(127, 29, 29, 0.4);
+}
+.dark .text-red-700 {
+  color: #f87171;
+}
+.dark .bg-orange-100 {
+  background-color: rgba(124, 45, 18, 0.4);
+}
+.dark .text-orange-700 {
+  color: #fb923c;
+}
+.dark .bg-yellow-100 {
+  background-color: rgba(113, 63, 18, 0.4);
+}
+.dark .text-yellow-700 {
+  color: #facc15;
+}
+.dark .bg-blue-100 {
+  background-color: rgba(30, 58, 138, 0.4);
+}
+.dark .text-blue-700 {
+  color: #93c5fd;
+}
+.dark .bg-purple-100 {
+  background-color: rgba(88, 28, 135, 0.4);
+}
+.dark .text-purple-700 {
+  color: #d8b4fe;
+}
+
+/* Alert and confirmation banners */
+.dark .bg-green-50 {
+  background-color: rgba(20, 83, 45, 0.25);
+}
+.dark .border-green-200 {
+  border-color: rgba(34, 197, 94, 0.35);
+}
+.dark .bg-red-50 {
+  background-color: rgba(127, 29, 29, 0.25);
+}
+.dark .border-red-200 {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+.dark .bg-blue-50\/50 {
+  background-color: rgba(30, 58, 138, 0.2);
+}
+.dark .bg-red-50\/50 {
+  background-color: rgba(127, 29, 29, 0.2);
+}
+.dark .bg-yellow-50 {
+  background-color: rgba(113, 63, 18, 0.25);
+}
+.dark .bg-orange-50 {
+  background-color: rgba(124, 45, 18, 0.25);
+}
+
+/* Text tones inside banners */
+.dark .text-green-800 {
+  color: #86efac;
+}
+.dark .text-red-800 {
+  color: #fca5a5;
+}
+.dark .text-green-600 {
+  color: #4ade80;
+}
+.dark .text-red-500 {
+  color: #f87171;
+}
+.dark .text-blue-600 {
+  color: #60a5fa;
+}
+.dark .text-orange-600 {
+  color: #fb923c;
+}
+.dark .text-yellow-600 {
+  color: #facc15;
+}
+
+/* ============================================================
+   Professional design refinements
+   Applied globally through the utility classes the app already
+   uses, so every screen is lifted at once (no per-component edits).
+   ============================================================ */
+
+/* Softer, cooler page backgrounds than flat #f3f3f3 */
+.bg-\[\#f3f3f3\],
+.bg-\[\#f8f8f8\] {
+  background-color: #f4f5f7;
+}
+
+/* Layered, soft shadows in place of Tailwind's flat defaults.
+   These read as gentle depth rather than a hard drop shadow. */
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(16, 24, 40, 0.04),
+              0 1px 3px 0 rgba(16, 24, 40, 0.05) !important;
+}
+.shadow-md {
+  box-shadow: 0 2px 4px -1px rgba(16, 24, 40, 0.05),
+              0 6px 14px -3px rgba(16, 24, 40, 0.08) !important;
+}
+.shadow-lg {
+  box-shadow: 0 4px 8px -3px rgba(16, 24, 40, 0.05),
+              0 14px 28px -6px rgba(16, 24, 40, 0.12) !important;
+}
+.shadow-xl {
+  box-shadow: 0 8px 16px -6px rgba(16, 24, 40, 0.06),
+              0 24px 44px -10px rgba(16, 24, 40, 0.16) !important;
+}
+
+/* On dark surfaces, shadows are barely visible — swap them for a
+   subtle deep-shadow so cards keep their sense of elevation. */
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.30) !important;
+}
+.dark .shadow-md {
+  box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.38),
+              0 8px 18px -6px rgba(0, 0, 0, 0.44) !important;
+}
+.dark .shadow-lg,
+.dark .shadow-xl {
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.50) !important;
+}
+
+/* Hairline borders read cleaner than solid gray-200 */
+.border-gray-100 {
+  border-color: #f0f1f4;
+}
+.border-gray-200 {
+  border-color: #e7e9ee;
+}
+
+/* Calmer focus ring — a soft 3.5px halo instead of a hard 2px band */
+.focus\:ring-2:focus {
+  box-shadow: 0 0 0 3.5px var(--ring-halo, rgba(59, 130, 246, 0.30)) !important;
+}
+.focus\:ring-blue-500:focus  { --ring-halo: rgba(59, 130, 246, 0.30); }
+.focus\:ring-red-400:focus   { --ring-halo: rgba(248, 113, 113, 0.30); }
+.focus\:ring-green-500:focus { --ring-halo: rgba(34, 197, 94, 0.30); }
+.focus\:ring-gray-800:focus  { --ring-halo: rgba(31, 41, 55, 0.24); }
+
+/* Slightly quicker, smoother transitions on interactive surfaces */
+.transition-shadow,
+.transition-colors {
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}

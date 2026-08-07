@@ -1,0 +1,12 @@
+name,student_id,roll_number,initials,email,is_monitor
+Ty Kimhong,M1202501,01,TK,kimhong.ty.3624@rupp.edu.kh,false
+Thypheap Sachak Ponleu Pragna,M1202502,02,TS,sachakponleupragna.thypheap.3624@rupp.edu.kh,true
+Tith Annchhengly,M1202503,03,TA,annchhengly.tith.3624@rupp.edu.kh,false
+Leang Serminh,M1202504,04,LS,serminh.leang.3624@rupp.edu.kh,false
+Pa Soborith,M1202505,05,PS,soborith.pa.3624@rupp.edu.kh,false
+Tep Piseth,M2202501,01,TP,piseth.heng@rupp.edu.kh,false
+Mann Vannda,M2202502,02,MV,chanthy.noun@rupp.edu.kh,false
+G Devid,M2202503,03,GD,sophea.meas@rupp.edu.kh,false
+Spike Dog,E1202501,01,SD,spike.dog@rupp.edu.kh,false
+Jerry Mouse,E1202502,02,JM,jerry.mouse@rupp.edu.kh,false
+Tom Cat,E1202503,03,TC,tom.cat@rupp.edu.kh,false
