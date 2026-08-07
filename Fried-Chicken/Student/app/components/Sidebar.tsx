@@ -21,6 +21,7 @@ import {
 import ThemeToggle from '@/app/components/ThemeToggle'
 import { supabase } from '@/lib/supabase'
 import { resolveAvatar } from '@/lib/avatar'
+import { leaveScopeFor } from '@/lib/leaveScope'
 import { useSelectedClass } from '@/lib/selectedClass'
 
 interface SidebarProps {
@@ -69,13 +70,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   }, [])
 
   // Pending-leave badge can change as you work — refresh it on navigation.
+  // Scoped by routing so the number matches what the Leave page will show:
+  // a 1-day request goes to the class monitor, not to a teacher.
   useEffect(() => {
-    supabase
+    let query = supabase
       .from('leave_requests')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'pending')
-      .then(({ count }) => setPendingLeaves(count ?? 0))
-  }, [pathname])
+    const scope = leaveScopeFor(role)
+    if (scope) query = query.or(scope)
+    query.then(({ count }) => setPendingLeaves(count ?? 0))
+  }, [pathname, role])
 
   // Accounts waiting on approval. Only admins can read other profiles, so this
   // quietly returns 0 for teachers — who don't see the nav item anyway.
@@ -136,8 +141,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <X size={20} />
         </button>
 
-        {/* Profile */}
-        <div className="flex flex-col items-center pt-10 pb-6 px-6 border-b border-gray-100">
+        {/* Profile — fixed at the top, never scrolls or squashes */}
+        <div className="flex-shrink-0 flex flex-col items-center pt-10 pb-6 px-6 border-b border-gray-100">
           {avatarSrc ? (
             <div
               className="w-16 h-16 rounded-full bg-cover bg-center mb-3 ring-2 ring-white shadow-sm"
@@ -170,7 +175,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1" aria-label="Main navigation">
+        {/* Only this scrolls, so Logout below stays reachable however many
+            nav items an admin has. min-h-0 is what allows a flex child to
+            shrink past its content — without it the list pushes Logout off
+            the bottom of the sidebar instead of scrolling. */}
+        <nav
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-6 space-y-1"
+          aria-label="Main navigation"
+        >
           {navItems.map((item) => {
             const { label, href, icon: Icon } = item
             const isActive = pathname === href || pathname.startsWith(href + '/')
@@ -196,8 +208,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Logout & theme */}
-        <div className="px-4 pb-8 pt-4 border-t border-gray-100 flex items-center gap-1">
+        {/* Logout & theme — pinned to the bottom, outside the scroll area */}
+        <div className="flex-shrink-0 px-4 pb-6 pt-4 border-t border-gray-100 flex items-center gap-1 bg-white">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-2.5 flex-1 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors cursor-pointer"

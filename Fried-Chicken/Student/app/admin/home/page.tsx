@@ -18,6 +18,7 @@ import StatCard from '@/app/components/StatCard'
 import GenerateQrButton from '@/app/components/GenerateQr'
 import { supabase } from '@/lib/supabase'
 import { getSelectedClass, useSelectedClass } from '@/lib/selectedClass'
+import { leaveScopeFor } from '@/lib/leaveScope'
 
 // Students whose attendance falls below this percentage are flagged (SRS 3.1.4)
 const ATTENDANCE_THRESHOLD = 80
@@ -77,8 +78,31 @@ export default function HomePage() {
   })
 
   useEffect(() => {
+    async function load() {
     const date = new Date().toISOString().split('T')[0]
     const cls = getSelectedClass()
+
+    // Leave routing depends on the role, so resolve it before counting:
+    // a 1-day request belongs to the class monitor, not to a teacher, and
+    // showing it here would disagree with the Leave page.
+    const { data: { user } } = await supabase.auth.getUser()
+    let role = 'teacher'
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      role = profile?.role ?? 'teacher'
+    }
+
+    let leaveQuery = supabase
+      .from('leave_requests')
+      .select('id, name, reason, start_date, end_date')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+    const scope = leaveScopeFor(role)
+    if (scope) leaveQuery = leaveQuery.or(scope)
 
     // RLS already limits a teacher to their own classes, so an unfiltered
     // query returns exactly what this user is allowed to see.
@@ -88,11 +112,7 @@ export default function HomePage() {
     Promise.all([
       studentsQuery,
       supabase.from('attendance').select('student_id, subject_id, status, date'),
-      supabase
-        .from('leave_requests')
-        .select('id, name, reason, start_date, end_date')
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false }),
+      leaveQuery,
       supabase.from('students').select('id, class_id'),
       supabase.from('classes').select('id, name').order('name'),
       supabase.from('subjects').select('id, class_id'),
@@ -186,6 +206,8 @@ export default function HomePage() {
         )
       }
     )
+    }
+    load()
   }, [])
 
   const remaining = stats ? Math.max(stats.roster - stats.marked, 0) : 0

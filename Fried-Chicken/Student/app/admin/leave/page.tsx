@@ -5,6 +5,7 @@ import { Clock, FileText } from 'lucide-react'
 import GenerateQrButton from '@/app/components/GenerateQr'
 import { supabase } from '@/lib/supabase'
 import { logActivity } from '@/lib/logger'
+import { leaveScopeFor } from '@/lib/leaveScope'
 
 interface LeaveRequest {
   id: number
@@ -58,9 +59,8 @@ export default function LeavePage() {
         .from('leave_requests')
         .select('id, name, reason, start_date, end_date, routed_to, document_url')
         .eq('status', 'pending')
-      if (role === 'teacher') {
-        query = query.or('routed_to.eq.teacher,routed_to.is.null')
-      }
+      const scope = leaveScopeFor(role)
+      if (scope) query = query.or(scope)
 
       const { data } = await query.order('created_at', { ascending: true })
       if (data) setLeaves(data)
