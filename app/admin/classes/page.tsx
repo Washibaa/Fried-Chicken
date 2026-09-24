@@ -24,18 +24,33 @@ export default function ChooseClassPage() {
   const [classes, setClasses] = useState<ClassRow[]>([])
   const [loading, setLoading] = useState(true)
   const [unavailable, setUnavailable] = useState(false)
+  const [isTeacher, setIsTeacher] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    supabase
-      .from('classes')
-      .select('id, name, department')
-      .order('name', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) setUnavailable(true)
-        else setClasses(data ?? [])
-        setLoading(false)
-      })
+    async function load() {
+      // A teacher only gets back the classes assigned to them (enforced by
+      // RLS), so an empty list means something different for each role.
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        setIsTeacher((profile?.role ?? user.user_metadata?.role) === 'teacher')
+      }
+
+      const { data, error } = await supabase
+        .from('classes')
+        .select('id, name, department')
+        .order('name', { ascending: true })
+
+      if (error) setUnavailable(true)
+      else setClasses(data ?? [])
+      setLoading(false)
+    }
+    load()
   }, [])
 
   function choose(cls: ClassRow | null) {
@@ -61,6 +76,23 @@ export default function ChooseClassPage() {
 
         {loading ? (
           <p className="text-sm text-gray-400">Loading classes…</p>
+        ) : !unavailable && classes.length === 0 && isTeacher ? (
+          <div className="text-center max-w-sm">
+            <p className="text-sm text-gray-700 font-semibold mb-1.5">
+              No classes assigned to you yet
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              An admin or the Head of Department assigns the classes you teach. Until then
+              there&apos;s nothing for you to see here — ask them to add you from the
+              Teachers page.
+            </p>
+            <button
+              onClick={() => choose(null)}
+              className="px-6 py-2.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg transition-colors cursor-pointer"
+            >
+              Continue anyway
+            </button>
+          </div>
         ) : unavailable || classes.length === 0 ? (
           <div className="text-center">
             <p className="text-sm text-gray-500 mb-4">
